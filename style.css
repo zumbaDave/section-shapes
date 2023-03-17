@@ -1,0 +1,132 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+:root {
+    /* 0, 0% is black, 12% lightens it up, if 13% was 12% it would be even lighter */
+    /* we are doing this so it is easier to match spike colors with background in the spikes section */
+    /* for how we are using this in spikes.. the background color does have to be a solid color, it cannot be a gradient */
+    --body-bg: hsl(0, 0%, 12%);
+}
+
+html {
+    color-scheme: dark light; /* this only works if user has set up browser to be in dark mode */
+    /* Since I do not, will change manually */
+    /* but will do so in body */
+}
+
+body {
+    background: var(--body-bg);
+    color: white;
+    font-family: system-ui;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.wrapper {
+    max-width: 50rem;
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    margin-inline: auto; /* Does the same as above two lines */
+    padding-inline: 1rem;
+}
+
+.site-title {
+    font-size: 3rem;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 2.25rem;
+}
+
+section {
+    /* block is the opposite of inline, block is top bottom, inline is left right */
+    padding-block: 5rem;
+}
+
+.diagonal {
+    /* to help make the site easier to work with if there are changes, we will use a variables */
+    --skew-angle: -5deg;
+    --background: linear-gradient(45deg, #12c2e9, #c471ed, #f64f59);
+
+    /* relative because pseudo element will be absolute */
+    position: relative;
+    
+    /* our pseudo element has a z-index of -1 */
+    /* so there is a risk that if this section was inside of something, eg inside a div */
+    /* there is a risk the pseudo element would go behind that div and you would not see it */
+    /* so we use isolation: isolate; to prevent that from happening */
+    /* this means that -1 z-index for the pseudo element, has to stay within the diagonal */
+    isolation: isolate;
+}
+
+/* we want to skew the background but not the text *
+/* we could skew the background and unskew the content */
+/* or we can use a pseudo element, which is what we will do */
+/* can use either before or after */
+.diagonal::after {
+    content: '';
+    background: var(--background);
+    position: absolute;
+    /* instead of using top, bottom, left, right of 0, we can use inset */
+    inset: 0;
+    z-index: -1;
+    transform: skewY(var(--skew-angle));
+}
+
+.spikes {
+    --spike-width: 50px;
+    --spike-height: 10px;
+    --spike-color: var(--body-bg);
+    position: relative;
+    color: black;
+    background: linear-gradient(to right, #fdc830, #f37335);
+}
+
+.spikes::before, 
+.spikes::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: var(--spike-height);
+    background: var(--spike-color);
+    /* using prefix for chrome */
+    /* mask-image works almost like background-image */
+    /* also, we made sure to add the following to the svg itself -> preserveAspectRatio="none" */
+    -webkit-mask-image: url('assets/images/triangle.svg');
+    -webkit-mask-size: var(--spike-width) var(--spike-height); /* make sure 50px here matches height set above of 50px, because like background-image, it will repeat to fill the 50px height */
+    /* following could be used, if you want for whatever reason to repeat in a larger height, but we don't want that here  */
+    /* -webkit-mask-repeat: repeat-x; */
+    mask-image: url('assets/images/triangle.svg');
+    mask-size: var(--spike-width) var(--spike-height);
+}
+
+.spikes::before {
+    top: 0;
+}
+
+.spikes::after {
+    bottom: 0;
+    /* possible problem:  by rotating, when zooming in and out on browser, you can see some pixalation problems */
+    /* fix would be to make a different svg for the bottom */
+    transform: rotate(.5turn); /* same as 180deg */
+}
+
+.wavy {
+    background: linear-gradient(to right, #00f260, #0575e6);
+
+    /* css generated from https://css-generators.com/wavy-shapes/ */
+    /* --mask is a custom variable we use to set mask */
+    --mask:
+        radial-gradient(50.39px at 50% 68.75px,#000 99%,#0000 101%) calc(50% - 50px) 0/100px 51% repeat-x,
+        radial-gradient(50.39px at 50% -43.75px,#0000 99%,#000 101%) 50% 25px/100px calc(51% - 25px) repeat-x,
+        radial-gradient(50.39px at 50% calc(100% - 68.75px),#000 99%,#0000 101%) calc(50% - 50px) 100%/100px 51% repeat-x,
+        radial-gradient(50.39px at 50% calc(100% + 43.75px),#0000 99%,#000 101%) 50% calc(100% - 25px)/100px calc(51% - 25px) repeat-x;
+    
+    -webkit-mask: var(--mask);
+    mask: var(--mask);
+}
